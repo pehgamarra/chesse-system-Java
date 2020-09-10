@@ -1,38 +1,62 @@
 package boardgame;
 
 public class Board {
-
 	private int rows;
-	private int coluns;
-	private Piece[][] piece;
+	private int columns;
+	private Piece[][] pieces;
 
-	public Board(int rows, int coluns) {
+	public Board(int rows, int columns) {
+		if (rows < 1 || columns < 1) {
+			throw new BoardException("Error creating board: there must be at last 1 row and 1 column");
+		}
 		this.rows = rows;
-		this.coluns = coluns;
-		piece = new Piece[rows][coluns];
+		this.columns = columns;
+		pieces = new Piece[rows][columns];
 	}
 
 	public int getRows() {
 		return rows;
 	}
 
-	public void setRows(int rows) {
-		this.rows = rows;
+	public int getColumns() {
+		return columns;
 	}
 
-	public int getColuns() {
-		return coluns;
-	}
-
-	public void setColuns(int coluns) {
-		this.coluns = coluns;
-	}
-	
 	public Piece piece(int row, int column) {
-		return piece[row][column];
+		if (!positionExists(row, column)) {
+			throw new BoardException("Position not on the board");
+		}
+		return pieces[row][column];
 	}
-	
+
 	public Piece piece(Position position) {
-		return piece[position.getRow()][position.getColumn()];
+		if (!positionExists(position)) {
+			throw new BoardException("Position not on the board");
+		}
+		return pieces[position.getRow()][position.getColumn()];
+	}
+
+	public void placePiece(Piece piece, Position position) {
+		if (thereIsAPiece(position)) {
+			throw new BoardException("There is already a piece on position " + position);
+		}
+		pieces[position.getRow()][position.getColumn()] = piece;
+		piece.position = position;
+
+	}
+
+	private boolean positionExists(int row, int column) {
+		return row >= 0 && row < rows && column >= 0 && column < columns;
+	}
+
+	public boolean positionExists(Position position) {
+		return positionExists(position.getRow(), position.getColumn());
+	}
+
+	public boolean thereIsAPiece(Position position) {
+		if (!positionExists(position)) {
+			throw new BoardException("Position not on the board");
+		}
+		return piece(position) != null;
 	}
 }
